@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Realtime Twitter Feed</title>
+  <link rel="stylesheet" href="/css/milligram.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/jquery-3.2.1.min.js"></script>
+  <script src="/js/socket.io.js"></script>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Twitter Stream</h1>
+    <div class="row">
+      <div class="column column-50 column-offset-25">
+        <input type="text" value="" placeholder="Filter Tweets">
+        <button type="button" id="start" name="button">Start</button>
+        <button type="button" id="stop" name="button">Stop</button>
+      </div>
+    </div>
+    <div id="tweet-list">
+
+    </div>
+  </div>
+
+
+  <script>
+    // make it real-time, make it count...
+    var socket = io.connect()
+    var $input = $('input')
+    var $startBtn = $('#start')
+    var $stopBtn = $('#stop')
+    var $tweetList = $('#tweet-list')
+
+    $startBtn.on('click', function(){
+      console.log('stART btn');
+      var filterText = $input.val()
+      console.log(filterText);
+      socket.emit('start-stream', filterText)
+    })
+    $stopBtn.on('click', function(){
+      console.log('stop btn');
+      socket.emit('stop-stream')
+    })
+
+    socket.on('new-tweet', function(tweet){
+      console.log(tweet);
+      var $blockQuote = $('<blockquote>').text(tweet.text)
+      $blockQuote.hide()
+      $tweetList.prepend($blockQuote)
+      $blockQuote.slideDown(1000)
+    })
+  </script>
+
+</body>
+
+</html>
